@@ -33,6 +33,20 @@ STEP = 10
 setDisplay = pygame.display.set_mode(WINDOW_RESOLUTION)
 pygame.display.set_caption(WINDOW_NAME)
 
+def loadGame():
+	notReady = True
+	setDisplay.fill(BLACK)
+	pygame.draw.rect(setDisplay, RED, (int(WINDOW_RESOLUTION[0]/8), int(WINDOW_RESOLUTION[1]/4)*3, int(WINDOW_RESOLUTION[0]/8)*6, int(WINDOW_RESOLUTION[1]/8)), 2)
+	pygame.display.update()
+	pygame.time.wait(500)
+
+	for i in range(1, 7):
+		pygame.draw.rect(setDisplay, WHITE, (int(WINDOW_RESOLUTION[0]/8), int(WINDOW_RESOLUTION[1]/4)*3, int(WINDOW_RESOLUTION[0]/8)*i, int(WINDOW_RESOLUTION[1]/8)))
+		pygame.draw.rect(setDisplay, RED, (int(WINDOW_RESOLUTION[0]/8), int(WINDOW_RESOLUTION[1]/4)*3, int(WINDOW_RESOLUTION[0]/8)*6, int(WINDOW_RESOLUTION[1]/8)), 2)
+		pygame.display.update()
+		pygame.time.wait(100)
+
+
 def runGame():
     global BACKGROUND_POSX
     global BACKGROUND_POSY
@@ -47,15 +61,15 @@ def runGame():
         keys = pygame.key.get_pressed()
         if keys[K_UP]:
             #BACKGROUND_POSX = STEP
-            BACKGROUND_POSY -= STEP
+            BACKGROUND_POSY += STEP
         elif keys[K_DOWN]:
             #BACKGROUND_POSX = STEP
-            BACKGROUND_POSY += STEP
+            BACKGROUND_POSY -= STEP
         if keys[K_LEFT]:
-            BACKGROUND_POSX -= STEP
+            BACKGROUND_POSX += STEP
             #BACKGROUND_POSY = STEP
         elif keys[K_RIGHT]:
-            BACKGROUND_POSX += STEP
+            BACKGROUND_POSX -= STEP
             #BACKGROUND_POSY = STEP
                     
         
@@ -63,12 +77,15 @@ def runGame():
         setDisplay.blit(BACKGROUND_IMG,(BACKGROUND_POSX, BACKGROUND_POSY))
         
         #gostek
-        pygame.draw.circle(setDisplay, RED, HERO_POSITION, 55)
+        pygame.draw.circle(setDisplay, RED, HERO_POSITION, 10)
         
         pygame.display.update()
         FPS_TIME.tick(FPS)
+
+loadGame()
 
 while True:
     global FPS_TIME
     FPS_TIME = pygame.time.Clock()
     runGame()
+    
