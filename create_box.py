@@ -4,19 +4,16 @@ import numpy
 
 a = (192,249)
 b = (361,205)
-d = (385,460)
-c = (591,383)
+c = (385,460)
+d = (591,383)
 
-DIM_X =  700
-DIM_Y =  700
+DIM_X =  1024
+DIM_Y =  768
 
 POINTS = ( a , b , c , d)
 
 def create_box ( DIM_X , DIM_Y , POINTS ):
     matrix = numpy.zeros(shape=(DIM_X,DIM_Y))
-
-
-
 
     def solve( (x1 , y1) , (x2 , y2) ):
         ARRAY_1 = numpy.array([[x1,1], [x2,1]])
@@ -44,3 +41,44 @@ def create_box ( DIM_X , DIM_Y , POINTS ):
                 matrix[i,j] = 1
 
     return matrix
+
+
+import pickle 
+
+matrix = create_box(DIM_X, DIM_Y, POINTS)
+
+# try:
+#     f = open("file.txt", "w")
+#     pickle.dump(matrix, f)
+# finally:
+#     f.close()
+
+# b =[]
+
+# try:
+#     fi = open("file.txt", "r")
+#     b = pickle.load(fi)
+# finally:
+#     fi.close()
+
+import pygame
+
+pygame.init()
+
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
+setDisplay = pygame.display.set_mode((DIM_X,DIM_Y))
+setDisplay.fill(WHITE)
+
+pixele = pygame.PixelArray(setDisplay)
+for n in range(0, DIM_X):
+    for m in range(0, DIM_Y):
+        if matrix[n][m] == 0:
+            pixele[n][m] = BLACK
+        else:
+            pixele[n][m] = WHITE
+
+pygame.display.update()
+
+raw_input()
