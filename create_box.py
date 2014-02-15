@@ -2,18 +2,19 @@ __author__ = 'maciex'
 
 import numpy
 
-a = (192,249)
-b = (361,205)
-c = (385,460)
-d = (591,383)
+a = (210,268)
+b = (385,216)
+d = (406,473)
+c = (596,394)
 
-DIM_X =  1024
-DIM_Y =  768
+DIM_X =  700
+DIM_Y =  700
 
-POINTS = ( a , b , c , d)
+POINTS = ( a , b , c , d )
 
 def create_box ( DIM_X , DIM_Y , POINTS ):
     matrix = numpy.zeros(shape=(DIM_X,DIM_Y))
+
 
     def solve( (x1 , y1) , (x2 , y2) ):
         ARRAY_1 = numpy.array([[x1,1], [x2,1]])
@@ -21,26 +22,32 @@ def create_box ( DIM_X , DIM_Y , POINTS ):
         return numpy.linalg.solve(ARRAY_1, ARRAY_2)
 
     line1 = solve( POINTS[0] , POINTS[1] )
-    line2 = solve( POINTS[1] , POINTS[2] )
+    print (line1)
+    line2 = solve( POINTS[0] , POINTS[2] )
+    print (line2)
     line3 = solve( POINTS[2] , POINTS[3] )
-    line4 = solve( POINTS[3] , POINTS[0] )
+    print (line3)
+    line4 = solve( POINTS[1] , POINTS[3] )
+    print (line4)
 
-    for i in range(a[0],b[0]):
+
+    for i in range(POINTS[0][0],POINTS[1][0]):
         for j in range(0,DIM_Y):
-            if ( ( j < line1[0]*i + line1[1]) and ( j > line2[0]*i + line2[1] ) ):
+            if ( ( j < ( line1[0]*i + line1[1] )) and ( j > ( line2[0]*i + line2[1] )) ):
                 matrix[i,j] = 1
 
-    for i in range(b[0],c[0]):
+    for i in range(POINTS[1][0],POINTS[2][0]):
         for j in range(0,DIM_Y):
-            if ( ( j < line1[0]*i + line1[1]) and ( j > line4[0]*i + line4[1] ) ):
+            if ( ( j < ( line4[0]*i + line4[1] )) and ( j > ( line2[0]*i + line2[1] )) ):
                 matrix[i,j] = 1
 
-    for i in range(c[0],d[0]):
+    for i in range(POINTS[2][0],POINTS[3][0]):
         for j in range(0,DIM_Y):
-            if ( ( j < line3[0]*i + line3[1]) and ( j > line4[0]*i + line4[1] ) ):
+            if ( ( j < ( line4[0]*i + line4[1] )) and ( j > ( line3[0]*i + line3[1] )) ):
                 matrix[i,j] = 1
 
     return matrix
+  
 
 
 import pickle 
@@ -78,6 +85,7 @@ for n in range(0, DIM_X):
             pixele[n][m] = BLACK
         else:
             pixele[n][m] = WHITE
+    pygame.display.update()
 
 pygame.display.update()
 
