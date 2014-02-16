@@ -75,27 +75,29 @@ def create_box ( DIM_X , DIM_Y , POINTS ):
     return matrix
 
 
-matrix = create_box(DIM_X, DIM_Y, POINTS)
+if __name__ == "__main__":
+
+    matrix = create_box(DIM_X, DIM_Y, POINTS)
+
+    import pygame
+
+    pygame.init()
+
+    WHITE = (255, 255, 255)
+    BLACK = (0, 0, 0)
+
+    setDisplay = pygame.display.set_mode((DIM_X,DIM_Y))
+    setDisplay.fill(WHITE)
+
+    pixele = pygame.PixelArray(setDisplay)
+    for n in range(0, DIM_X):
+        for m in range(0, DIM_Y):
+            if matrix[n][m] == 0:
+                pixele[n][m] = BLACK
+            else:
+                pixele[n][m] = WHITE
 
 
-import pygame
+    pygame.display.update()
 
-pygame.init()
-
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-
-setDisplay = pygame.display.set_mode((DIM_X,DIM_Y))
-setDisplay.fill(WHITE)
-
-pixele = pygame.PixelArray(setDisplay)
-for n in range(0, DIM_X):
-    for m in range(0, DIM_Y):
-        if matrix[n][m] == 0:
-            pixele[n][m] = BLACK
-        else:
-            pixele[n][m] = WHITE
-
-
-pygame.display.update()
-
+    raw_input()
