@@ -1,5 +1,6 @@
 import sys
 import pygame
+import time
 import numpy
 from pygame.locals import *
 
@@ -52,10 +53,20 @@ HERO_POSITION = [BACKGROUND_POSX + int(WINDOW_RESOLUTION[0]/2), BACKGROUND_POSY 
 WINDOW_NAME = "OurGame"
 FPS = 60
 
-HERO_SPEED = 1
+HERO_SPEED = 25
+HERO_WALK = 25
+HERO_RUN = 10
 
 setDisplay = pygame.display.set_mode(WINDOW_RESOLUTION)
 pygame.display.set_caption(WINDOW_NAME)
+
+def detectDoubleClick():
+    initTime = time.clock()
+    while time.clock() - initTime < 0.5:
+        for event in pygame.event.get([MOUSEBUTTONDOWN]):
+            if event.type == MOUSEBUTTONDOWN:
+                return True
+    return False
 
 def loadGame():
     notReady = True
@@ -70,7 +81,6 @@ def loadGame():
         pygame.display.update()
         pygame.time.wait(100)
 
-
 def screenBoundsCheck(minus = False, axisX = False, axisY = False):
     global BACKGROUND_POSX, BACKGROUND_POSY
     if minus:
@@ -84,7 +94,6 @@ def screenBoundsCheck(minus = False, axisX = False, axisY = False):
         if (BACKGROUND_POSY + STEP <= 0) and axisY:
             BACKGROUND_POSY += STEP
 
-
 def heroCollisionCheck(x, y):
     return MATRIX[x,y]
 
@@ -92,8 +101,6 @@ def animateHeroMovement(x0, y0, x, y):
     global BACKGROUND_POSX
     global BACKGROUND_POSY
     global HERO_SPEED
-    #BACKGROUND_POSX = x
-    #BACKGROUND_POSY = y
 
     d = numpy.sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0))
     if ((x-x0) != 0):
@@ -101,21 +108,14 @@ def animateHeroMovement(x0, y0, x, y):
     else:
         a = 0
 
-    print(d)
-    print(a)
-
-    print(x0)
-    print(y0)
-    print(x)
-    print(y)
-
     new_d = STEP
 
     bgx = BACKGROUND_POSX
     bgy = BACKGROUND_POSY
+    
+    mouseNotClicked = True
 
-    while ( new_d < d ):
-        print(new_d)
+    while ( new_d < d ) and (mouseNotClicked):
         if ( x > x0 ):
             if ( y < y0 ):
                 newx = x - (d - new_d)*numpy.cos(a)
@@ -131,25 +131,35 @@ def animateHeroMovement(x0, y0, x, y):
                 newx = x + (d - new_d)*numpy.cos(a)
                 newy = y - (d - new_d)*numpy.sin(a)
 
-        print("1: " + str(newx) + " , " + str(newy))
+        #print("1: " + str(newx) + " , " + str(newy))
 
         BACKGROUND_POSX = newx
         BACKGROUND_POSY = newy
         pygame.time.wait(HERO_SPEED)
         new_d += STEP
         drawGame()
+        
+        #click check
+        for event in pygame.event.get():
+            if event.type == MOUSEBUTTONDOWN:
+                #checking for double click
+                mouseNotClicked = False
+                mousePosition = pygame.mouse.get_pos()
+                
+                if detectDoubleClick():
+                    HERO_SPEED = HERO_RUN
+                else:
+                    HERO_SPEED = HERO_WALK
+                
+                return moveHero(mousePosition[0], mousePosition[1])
+                    
 
-
-    new_d = d
-    BACKGROUND_POSX = x
-    BACKGROUND_POSY = y
-    print(x)
-    print(y)
-
-    # for a -> b:
-    #     step x
-    #     step y
-    #     drawGame()
+    if mouseNotClicked:
+        new_d = d
+        BACKGROUND_POSX = x
+        BACKGROUND_POSY = y
+        #print(x)
+        #print(y)
 
 def moveHero(x, y):
     global BACKGROUND_POSX
@@ -177,6 +187,7 @@ def drawGame():
 def runGame():
     global BACKGROUND_POSX
     global BACKGROUND_POSY
+    global HERO_SPEED
     while True:
         #events
         for event in pygame.event.get():
@@ -185,8 +196,14 @@ def runGame():
                 pygame.quit()
                 sys.exit()
             elif event.type == MOUSEBUTTONDOWN:
+                #checking for double click
+                if detectDoubleClick():
+                    HERO_SPEED = HERO_RUN
+                else:
+                    HERO_SPEED = HERO_WALK
+                    
                 mousePosition = pygame.mouse.get_pos() # (x, y)
-                print mousePosition
+                #print mousePosition
                 moveHero(mousePosition[0], mousePosition[1])
 
         keys = pygame.key.get_pressed()
