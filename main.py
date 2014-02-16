@@ -1,5 +1,6 @@
 import sys
 import pygame
+import numpy
 from pygame.locals import *
 
 from create_box import create_box
@@ -43,13 +44,15 @@ BACKGROUND_POSX = -100
 BACKGROUND_POSY = -100
 MAP_WID = 1024
 MAP_HEI = 768
-STEP = 10
+STEP = 1
 
 WINDOW_RESOLUTION = (400, 300)
 WINDOW_CENTER = [int(WINDOW_RESOLUTION[0]/2), int(WINDOW_RESOLUTION[1]/2)]
 HERO_POSITION = [BACKGROUND_POSX + int(WINDOW_RESOLUTION[0]/2), BACKGROUND_POSY + int(WINDOW_RESOLUTION[1]/2)]
 WINDOW_NAME = "OurGame"
-FPS = 30
+FPS = 60
+
+HERO_SPEED = 1
 
 setDisplay = pygame.display.set_mode(WINDOW_RESOLUTION)
 pygame.display.set_caption(WINDOW_NAME)
@@ -85,12 +88,64 @@ def screenBoundsCheck(minus = False, axisX = False, axisY = False):
 def heroCollisionCheck(x, y):
     return MATRIX[x,y]
 
-def animateHeroMovement(x, y):
+def animateHeroMovement(x0, y0, x, y):
     global BACKGROUND_POSX
-    global BACKGROUND_POSY  
+    global BACKGROUND_POSY
+    global HERO_SPEED
+    #BACKGROUND_POSX = x
+    #BACKGROUND_POSY = y
+
+    d = numpy.sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0))
+    if ((x-x0) != 0):
+        a = numpy.arctan(numpy.fabs(y-y0)/numpy.fabs(x-x0))
+    else:
+        a = 0
+
+    print(d)
+    print(a)
+
+    print(x0)
+    print(y0)
+    print(x)
+    print(y)
+
+    new_d = STEP
+
+    bgx = BACKGROUND_POSX
+    bgy = BACKGROUND_POSY
+
+    while ( new_d < d ):
+        print(new_d)
+        if ( x > x0 ):
+            if ( y < y0 ):
+                newx = x - (d - new_d)*numpy.cos(a)
+                newy = y + (d - new_d)*numpy.sin(a)
+            else:
+                newx = x - (d - new_d)*numpy.cos(a)
+                newy = y - (d - new_d)*numpy.sin(a)
+        else:
+            if ( y < y0 ):
+                newx = x + (d - new_d)*numpy.cos(a)
+                newy = y + (d - new_d)*numpy.sin(a)
+            else:
+                newx = x + (d - new_d)*numpy.cos(a)
+                newy = y - (d - new_d)*numpy.sin(a)
+
+        print("1: " + str(newx) + " , " + str(newy))
+
+        BACKGROUND_POSX = newx
+        BACKGROUND_POSY = newy
+        pygame.time.wait(HERO_SPEED)
+        new_d += STEP
+        drawGame()
+
+
+    new_d = d
     BACKGROUND_POSX = x
     BACKGROUND_POSY = y
-    
+    print(x)
+    print(y)
+
     # for a -> b:
     #     step x
     #     step y
@@ -100,13 +155,16 @@ def moveHero(x, y):
     global BACKGROUND_POSX
     global BACKGROUND_POSY
     global HERO_POSITION
+    currentX = BACKGROUND_POSX
+    currentY = BACKGROUND_POSY
+
     x2 = x - BACKGROUND_POSX
     y2 = y - BACKGROUND_POSY
-    
+
     if heroCollisionCheck(x2, y2):
         targetX = BACKGROUND_POSX - x + WINDOW_RESOLUTION[0]/2
         targetY = BACKGROUND_POSY - y + WINDOW_RESOLUTION[1]/2
-        animateHeroMovement(targetX, targetY)
+        animateHeroMovement(currentX, currentY,targetX, targetY)
 
 def drawGame():
         #our weird background
