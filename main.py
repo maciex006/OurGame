@@ -169,8 +169,7 @@ def animateHeroMovement(x0, y0, x, y):
         new_d = d
         BACKGROUND_POSX = WINDOW_RESOLUTION[0]/2 - x
         BACKGROUND_POSY = WINDOW_RESOLUTION[1]/2 - y
-        #print(x)
-        #print(y)
+
 
 def translate(x , y):
     global BACKGROUND_POSX
@@ -178,6 +177,7 @@ def translate(x , y):
     return (int(x - BACKGROUND_POSX),int(y - BACKGROUND_POSY))
 
 def moveHero( position ):
+    print("Nowy klik!")
     targetX = position[0]
     targetY = position[1]
 
@@ -195,18 +195,19 @@ def moveHero( position ):
     
     if targetChamber != 0:
         if ( targetChamber == currentChamber ):
-            print( "pozycja:" + str(currentX) + "," +str(currentY))
-            print( "cel:" + str(targetX) + "," +str(targetY))
+            print( "pozycja1:" + str(currentX) + "," +str(currentY))
+            print( "cel1:" + str(targetX) + "," +str(targetY))
 
             animateHeroMovement(currentX, currentY, targetX, targetY)
         else:
-            print( "pozycja:" + str(currentX) + "," +str(currentY))
-            print( "cel:" + str(targetX) + "," +str(targetY))
 
-            path = find_path(int(currentChamber),int(targetChamber),DATA)
+            path = find_path(int(targetChamber),int(currentChamber),DATA)
+            print(path)
             for i in range(len(path[0])):
                 targetX = int(path[0][i][0])
                 targetY = int(path[0][i][1])
+                print( "pozycja2:" + str(currentX) + "," +str(currentY))
+                print( "cel2:" + str(targetX) + "," +str(targetY))
                 #print(str(currentX) + " oraz " + str(currentY))
                 #print(str(targetX) + " oraz " + str(targetY))
                 animateHeroMovement(currentX, currentY, targetX , targetY)
@@ -214,8 +215,11 @@ def moveHero( position ):
                 currentY = - BACKGROUND_POSY + WINDOW_RESOLUTION[1]/2
                 #print(str(currentX) + " oraz " + str(currentY))
 
+
             targetX = position[0]
             targetY = position[1]
+            print( "pozycja3:" + str(currentX) + "," +str(currentY))
+            print( "cel3:" + str(targetX) + "," +str(targetY))
             animateHeroMovement(currentX, currentY,targetX, targetY)
 
 
