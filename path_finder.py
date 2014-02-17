@@ -8,10 +8,14 @@ line5 = (5, (-5,4),(-6,6))
 line6 = (6, (-6,5))
 data = ( line1, line2, line3, line4, line5 )
 
-def find( currentPosition1, targetPosition1, data ):
+# FUNKCJA ZWRACA LISTE PUNKTOW, PRZEZ KTORE TRZEBA PRZEJSC ZEBY DOSTAC SIE DO DOCELOWEGO POMIESZCZENIA
 
 
-    #przeszukanie line1
+def find_path( currentPosition1, targetPosition1, data ):
+
+
+    # FUNKCJA ZWRACA WSZYSTKIE POKOJE PRZYLEGACJACE DO CURRENTPOSITION, CHYBA, ZE JEST NIM POSZUKIWANY POKOJ
+    # TARGET POSITION, WTEDY ZWRACA TYLKO JEGO NUMER
     def recur( currentPosition , targetPosition ):
         currentPosition = currentPosition -1
         path_ent = [0]
@@ -23,12 +27,9 @@ def find( currentPosition1, targetPosition1, data ):
 
             path_ent = path_ent + [new_path_ent]
             path_cham = path_cham + [new_path_cham]
-            #path_ent[i-1] =  data[currentPosition][i][0]
-            #path_cham[i-1] = data[currentPosition][i][1]
 
             if path_cham[i] == targetPosition:
                 return ( path_ent[i] , path_cham[i] )
-                print("returnelo")
             else:
                 pass
                 #print path_cham[i]
@@ -37,7 +38,10 @@ def find( currentPosition1, targetPosition1, data ):
 
 
 
-    # DRUGA ITERACJA
+    # FUNKCJA TWORZY STRUKTURE PATH, ZAWIERAJACA WSZYSTKIE MOZLIWE SCIEZKI
+    # path - sciezka wczesniej przez nas wygenerowana (dopisuje nowe punkty do sciezki)
+    # curPosition - aktualna nasza pozycja
+    # nunber - indeks sciezki\
 
     def druga_iter( path , curPosition , number ):
         if number == -1:
@@ -67,7 +71,7 @@ def find( currentPosition1, targetPosition1, data ):
         bufpath.remove(0)
         return bufpath
 
-
+    # FUNKCJA USUWA POZYCJE W LISCIE PRZEZNACZONE DO USUNIECIA
     def remove(path , remove):
 
         for i in range(0, len(remove)):
@@ -76,6 +80,8 @@ def find( currentPosition1, targetPosition1, data ):
                 remove[j] = remove[j]-1
         return path
 
+    # FUNKCJA ZWRACA POZYCJE, KTORE NALEZY USUNAC, ZE WZGLEDU NA ZAPETLENIA
+    # LOOP PREVENTION
     def removing(path):
         found = 0
         remove = [-1]
@@ -89,6 +95,7 @@ def find( currentPosition1, targetPosition1, data ):
         remove.remove(-1)
         return remove
 
+    # SPRAWDZA CZY DOTARLISMY JUZ DO CELU
     def check(path, target):
         remove = [-1]
         for i in range(0, len(path)):
@@ -108,7 +115,8 @@ def find( currentPosition1, targetPosition1, data ):
 
     # PO DRUGIEJ I TRZECIEJ ITERACJI
 
-
+    # GLOWNA FUNKCJA ( NASZA AKTUALNA POZYCJA (KTORY POKOJ), CEL (POKOJ DO KTOREGO ZMIERZAMY))
+    # ZWRACA SCIEZKE W POSTACI LISTY POKOI
     def main_func( currentPosition1 , targetPosition1 ):
 
         path = [0]
@@ -128,18 +136,7 @@ def find( currentPosition1, targetPosition1, data ):
         #######################################################print(path)
         return path
 
-
-
-
-
-    line1 = (1, (-1,3),(-2,2))
-    line2 = (2, (-2,1),(-6,3),(-3,4))
-    line3 = (3, (-1,1),(-6,2),(-4,4))
-    line4 = (4, (-4,3),(-3,2),(-5,5))
-    line5 = (5, (-5,4),(-6,6))
-    line6 = (6, (-6,5))
-    data = ( line1, line2, line3, line4, line5, line6 )
-
+    # FUNKCJA "TLUMACZACA" SCIEZKE ZAWIERAJACA NUMERY POKOI, NA SCIEZKE ZAWIERAJACA NUMERY DRZWI
     def translate(path):
         new_path =[[0],[0]]
         for j in range(0, len(path[0])-1):
@@ -161,5 +158,5 @@ def find( currentPosition1, targetPosition1, data ):
 
     return translate( main_func( currentPosition1 , targetPosition1 ) )
 
-print(find(1,5,data))
+print(find_path(1,5,data))
 
