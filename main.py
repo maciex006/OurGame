@@ -6,6 +6,7 @@ from pygame.locals import *
 
 from create_box import create_box
 from create_box import load_box
+from path_finder import find_path
 
 pygame.init()
 
@@ -31,11 +32,11 @@ DIM_Y =  728
 
 MATRIX = load_box( DIM_X , DIM_Y , "map_input.txt" )
 
-line1 = (1, (-1,2))
-line2 = (2, (-1,1),(-2,3))
-line3 = (3, (-2,2))
-data = ( line1, line2, line3 )
 
+line1 = (1, ((579,407),2))
+line2 = (2, ((579,407),1),((595,480),3))
+line3 = (3, ((595,480),2))
+DATA = ( line1, line2, line3 )
 
 #####################
 
@@ -95,8 +96,8 @@ def screenBoundsCheck(minus = False, axisX = False, axisY = False):
             BACKGROUND_POSY += STEP
 
 def heroCollisionCheck(x, y):
-    print(str(x) + "," + str(y))
-    print(MATRIX[x,y])
+    #print(str(x) + "," + str(y))
+    #print(MATRIX[x,y])
     return MATRIX[x,y]
 
 def animateHeroMovement(x0, y0, x, y):
@@ -111,9 +112,6 @@ def animateHeroMovement(x0, y0, x, y):
         a = 0
 
     new_d = STEP
-
-    bgx = BACKGROUND_POSX
-    bgy = BACKGROUND_POSY
     
     mouseNotClicked = True
 
@@ -133,14 +131,24 @@ def animateHeroMovement(x0, y0, x, y):
                 newx = x + (d - new_d)*numpy.cos(a)
                 newy = y - (d - new_d)*numpy.sin(a)
 
-        if heroCollisionCheck(-newx + WINDOW_RESOLUTION[0]/2, -newy + WINDOW_RESOLUTION[1]/2):
-            BACKGROUND_POSX = newx
-            BACKGROUND_POSY = newy
+        #if heroCollisionCheck(-newx + WINDOW_RESOLUTION[0]/2, -newy + WINDOW_RESOLUTION[1]/2):
+        #    BACKGROUND_POSX = newx
+        #    BACKGROUND_POSY = newy
+        #    pygame.time.wait(HERO_SPEED)
+        #    new_d += STEP
+        #    drawGame()
+        #else:
+        #    return -1
+
+        if heroCollisionCheck(newx, newy):
+            BACKGROUND_POSX = WINDOW_RESOLUTION[0]/2 - newx
+            BACKGROUND_POSY = WINDOW_RESOLUTION[1]/2 - newy
             pygame.time.wait(HERO_SPEED)
             new_d += STEP
             drawGame()
         else:
             return -1
+
 
         #click check
         for event in pygame.event.get():
@@ -154,30 +162,62 @@ def animateHeroMovement(x0, y0, x, y):
                 else:
                     HERO_SPEED = HERO_WALK
                 
-                return moveHero(mousePosition[0], mousePosition[1])
+                return moveHero(translate(mousePosition[0], mousePosition[1]))
                     
 
     if mouseNotClicked:
         new_d = d
-        BACKGROUND_POSX = x
-        BACKGROUND_POSY = y
+        BACKGROUND_POSX = WINDOW_RESOLUTION[0]/2 - x
+        BACKGROUND_POSY = WINDOW_RESOLUTION[1]/2 - y
         #print(x)
         #print(y)
 
-def moveHero(x, y):
+def translate(x , y):
     global BACKGROUND_POSX
     global BACKGROUND_POSY
-    global HERO_POSITION
-    currentX = BACKGROUND_POSX
-    currentY = BACKGROUND_POSY
+    return (int(x - BACKGROUND_POSX),int(y - BACKGROUND_POSY))
 
-    x2 = x - BACKGROUND_POSX
-    y2 = y - BACKGROUND_POSY
+def moveHero( position ):
+    targetX = position[0]
+    targetY = position[1]
 
-    if heroCollisionCheck(x2, y2):
-        targetX = BACKGROUND_POSX - x + WINDOW_RESOLUTION[0]/2
-        targetY = BACKGROUND_POSY - y + WINDOW_RESOLUTION[1]/2
-        animateHeroMovement(currentX, currentY,targetX, targetY)
+    global BACKGROUND_POSX
+    global BACKGROUND_POSY
+
+    #currentX = BACKGROUND_POSX
+    #currentY = BACKGROUND_POSY
+
+    currentX = - BACKGROUND_POSX + WINDOW_RESOLUTION[0]/2
+    currentY = - BACKGROUND_POSY + WINDOW_RESOLUTION[1]/2
+
+    currentChamber = heroCollisionCheck(targetX, targetY)
+    targetChamber = heroCollisionCheck(currentX, currentY)
+    
+    if targetChamber != 0:
+        if ( targetChamber == currentChamber ):
+            print( "pozycja:" + str(currentX) + "," +str(currentY))
+            print( "cel:" + str(targetX) + "," +str(targetY))
+
+            animateHeroMovement(currentX, currentY, targetX, targetY)
+        else:
+            print( "pozycja:" + str(currentX) + "," +str(currentY))
+            print( "cel:" + str(targetX) + "," +str(targetY))
+
+            path = find_path(int(currentChamber),int(targetChamber),DATA)
+            for i in range(len(path[0])):
+                targetX = int(path[0][i][0])
+                targetY = int(path[0][i][1])
+                #print(str(currentX) + " oraz " + str(currentY))
+                #print(str(targetX) + " oraz " + str(targetY))
+                animateHeroMovement(currentX, currentY, targetX , targetY)
+                currentX = - BACKGROUND_POSX + WINDOW_RESOLUTION[0]/2
+                currentY = - BACKGROUND_POSY + WINDOW_RESOLUTION[1]/2
+                #print(str(currentX) + " oraz " + str(currentY))
+
+            targetX = position[0]
+            targetY = position[1]
+            animateHeroMovement(currentX, currentY,targetX, targetY)
+
 
 def drawGame():
         #our weird background
@@ -204,10 +244,12 @@ def runGame():
                     HERO_SPEED = HERO_RUN
                 else:
                     HERO_SPEED = HERO_WALK
-                    
+
+
                 mousePosition = pygame.mouse.get_pos() # (x, y)
                 #print mousePosition
-                moveHero(mousePosition[0], mousePosition[1])
+
+                moveHero(translate(mousePosition[0], mousePosition[1]))
 
         keys = pygame.key.get_pressed()
         if keys[K_UP] or keys[K_w]:
