@@ -62,7 +62,7 @@ pygame.display.set_caption(WINDOW_NAME)
 
 def detectDoubleClick():
     initTime = time.clock()
-    while time.clock() - initTime < 0.5:
+    while time.clock() - initTime < 0.15:
         for event in pygame.event.get([MOUSEBUTTONDOWN]):
             if event.type == MOUSEBUTTONDOWN:
                 return True
@@ -143,6 +143,7 @@ def animateHeroMovement(x0, y0, x, y):
         for event in pygame.event.get():
             if event.type == MOUSEBUTTONDOWN:
                 #checking for double click
+                global mouseNotClicked
                 mouseNotClicked = False
                 mousePosition = pygame.mouse.get_pos()
                 
