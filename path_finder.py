@@ -68,9 +68,6 @@ def find( currentPosition1, targetPosition1, data ):
         return bufpath
 
 
-
-
-
     def remove(path , remove):
 
         for i in range(0, len(remove)):
@@ -104,49 +101,65 @@ def find( currentPosition1, targetPosition1, data ):
             remove.remove(-1)
             while -2 in remove:
                 remove.remove(-2)
-            print(remove)
             return remove
         else:
             return -1
 
 
-
-    '''
-    def removing2(path):
-        found = 0
-        remove = [-1]
-        leng = len(path)
-        for i in range(0, leng):
-            for j in range(0,len(path[i])-2):
-                for k in range(0, leng):
-                    print(str(path[i][j]) + " = " + str(path[k][len(path[k])-1]))
-                    if path[i][j] == path[k][len(path[k])-1]:
-                        print("DEL")
-                        remove = remove + [k]
-
-        remove.remove(-1)
-        print("REM" + str(remove))
-        return remove
-    '''
-
     # PO DRUGIEJ I TRZECIEJ ITERACJI
 
-    path = [0]
-    print(path)
-    path = druga_iter(path , currentPosition1 , -1)
-    print(path)
-    print(path[0][1])
-    path = druga_iter(path , path[0][1] , 0) + druga_iter(path, path[1][1], 1)
-    print(path)
-    path = remove(path , removing(path))
-    print(path)
-    path = druga_iter(path , path[0][2] , 0) + druga_iter(path, path[1][2], 1) + druga_iter(path, path[2][2], 2) + druga_iter(path, path[3][2], 3)
-    print(path)
-    if ( check(path, 5) != -1):
-          print "KONIEC"
-    path = remove(path, check(path, 5))
-    print(path)
+
+    def main_func( currentPosition1 , targetPosition1 ):
+
+        path = [0]
+        path = druga_iter(path , currentPosition1 , -1)
+        j = 1
+        while ( check(path, targetPosition1) == -1):
+            bufpath = [0]
+            for i in range(len(path)):
+                bufpath = bufpath + druga_iter(path , path[i][j] , i)
+
+            bufpath.remove(0)
+            path = bufpath
+            path = remove(path , removing(path))
+            j = j + 1
+
+        path = remove(path, check(path, targetPosition1))
+        #######################################################print(path)
+        return path
 
 
-find(1,5,data)
+
+
+
+    line1 = (1, (-1,3),(-2,2))
+    line2 = (2, (-2,1),(-6,3),(-3,4))
+    line3 = (3, (-1,1),(-6,2),(-4,4))
+    line4 = (4, (-4,3),(-3,2),(-5,5))
+    line5 = (5, (-5,4),(-6,6))
+    line6 = (6, (-6,5))
+    data = ( line1, line2, line3, line4, line5, line6 )
+
+    def translate(path):
+        new_path =[[0],[0]]
+        for j in range(0, len(path[0])-1):
+            for i in range(1,len(data[path[0][j]-1])):
+                if data[path[0][j]-1][i][1] == path[0][j+1] :
+                    new_path[0] = new_path[0] + [data[path[0][j]-1][i][0]]
+
+        new_path[0].remove(0)
+
+        for j in range(0, len(path[1])-1):
+            for i in range(1,len(data[path[0][j]-1])):
+                if data[path[1][j]-1][i][1] == path[1][j+1] :
+                    new_path[1] = new_path[1] + [data[path[1][j]-1][i][0]]
+
+        new_path[1].remove(0)
+
+        return new_path
+
+
+    return translate( main_func( currentPosition1 , targetPosition1 ) )
+
+print(find(1,5,data))
 
