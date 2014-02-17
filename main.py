@@ -5,6 +5,7 @@ import numpy
 from pygame.locals import *
 
 from create_box import create_box
+from create_box import load_box
 
 pygame.init()
 
@@ -24,18 +25,17 @@ PURPLE = (255, 0, 255)
 
 # matrix generation #
 #####################
-
-a = (210,268)
-b = (385,216)
-c = (406,473)
-d = (596,394)
     
 DIM_X =  1024
 DIM_Y =  728
 
-POINTS = ( a , b , c , d )
+MATRIX = load_box( DIM_X , DIM_Y , "map_input.txt" )
 
-MATRIX = create_box ( DIM_X , DIM_Y , POINTS )
+line1 = (1, (-1,2))
+line2 = (2, (-1,1),(-2,3))
+line3 = (3, (-2,2))
+data = ( line1, line2, line3 )
+
 
 #####################
 
@@ -95,6 +95,8 @@ def screenBoundsCheck(minus = False, axisX = False, axisY = False):
             BACKGROUND_POSY += STEP
 
 def heroCollisionCheck(x, y):
+    print(str(x) + "," + str(y))
+    print(MATRIX[x,y])
     return MATRIX[x,y]
 
 def animateHeroMovement(x0, y0, x, y):
@@ -131,19 +133,19 @@ def animateHeroMovement(x0, y0, x, y):
                 newx = x + (d - new_d)*numpy.cos(a)
                 newy = y - (d - new_d)*numpy.sin(a)
 
-        #print("1: " + str(newx) + " , " + str(newy))
+        if heroCollisionCheck(-newx + WINDOW_RESOLUTION[0]/2, -newy + WINDOW_RESOLUTION[1]/2):
+            BACKGROUND_POSX = newx
+            BACKGROUND_POSY = newy
+            pygame.time.wait(HERO_SPEED)
+            new_d += STEP
+            drawGame()
+        else:
+            return -1
 
-        BACKGROUND_POSX = newx
-        BACKGROUND_POSY = newy
-        pygame.time.wait(HERO_SPEED)
-        new_d += STEP
-        drawGame()
-        
         #click check
         for event in pygame.event.get():
             if event.type == MOUSEBUTTONDOWN:
                 #checking for double click
-                global mouseNotClicked
                 mouseNotClicked = False
                 mousePosition = pygame.mouse.get_pos()
                 
