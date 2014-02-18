@@ -2,6 +2,7 @@ import sys
 import pygame
 import time
 import numpy
+import NewEngineFile
 from pygame.locals import *
 
 from create_box import create_box
@@ -105,9 +106,6 @@ def screenBoundsCheck(minus = False, axisX = False, axisY = False):
 def heroCollisionCheck(x, y):
     return MATRIX[x,y]
 
-def pathLiner():
-    pass
-
 def animateHeroMovement(x0, y0, x, y):
     global BACKGROUND_POSX
     global BACKGROUND_POSY
@@ -139,14 +137,6 @@ def animateHeroMovement(x0, y0, x, y):
                 newx = x + (d - new_d)*numpy.cos(a)
                 newy = y - (d - new_d)*numpy.sin(a)
 
-        #if heroCollisionCheck(-newx + WINDOW_RESOLUTION[0]/2, -newy + WINDOW_RESOLUTION[1]/2):
-        #    BACKGROUND_POSX = newx
-        #    BACKGROUND_POSY = newy
-        #    pygame.time.wait(HERO_SPEED)
-        #    new_d += STEP
-        #    drawGame()
-        #else:
-        #    return -1
 
         if heroCollisionCheck(newx, newy):
             BACKGROUND_POSX = WINDOW_RESOLUTION[0]/2 - newx
@@ -228,13 +218,37 @@ def moveHero( position ):
             targetY = position[1]
             print( "pozycja3:" + str(currentX) + "," +str(currentY))
             print( "cel3:" + str(targetX) + "," +str(targetY))
-            animateHeroMovement(currentX, currentY,targetX, targetY)
+            animateHeroMovement(currentX, currentY , targetX , targetY)
 
+from engineClass import gameObject
+npc2 = gameObject('Stworek2', (655,415)) # 655,415
+#GAME_OBJECTS = {npc1.getPosition():npc1}
+GAME_OBJECTS = [npc2]
+
+npc1 = gameObject('Potworek2', (655,415))
+npc2 = gameObject('Stworek2', (360, 400))
+npc3 = gameObject('Horrorek3', (488, 544))
+#GAME_OBJECTS = {npc1.getPosition():npc1}
+GAME_OBJECTS = [npc1, npc2, npc3]
+print GAME_OBJECTS
+for e in GAME_OBJECTS:
+    e.setTarget(390, 340)
+
+def sigKill():
+    pygame.quit()
+    sys.exit()
 
 def drawGame():
         #our weird background
         setDisplay.blit(BACKGROUND_IMG,(BACKGROUND_POSX, BACKGROUND_POSY))
-        #hero
+        #gameObjects and our hero
+        for npc in GAME_OBJECTS:
+            npc.move(MATRIX,DATA)
+            npcPos = npc.getPosition()
+            npcX = int(npcPos[0] + BACKGROUND_POSX)
+            npcY = int(npcPos[1] + BACKGROUND_POSY)
+            pygame.draw.circle(setDisplay, GREEN, (npcX, npcY), 5)
+
         pygame.draw.circle(setDisplay, RED, WINDOW_CENTER, 10)
         pygame.display.update()
         FPS_TIME.tick(FPS)
@@ -279,7 +293,7 @@ def runGame():
         elif keys[K_RIGHT] or keys[K_d]:
             #BACKGROUND_POSX -= STEP
             screenBoundsCheck(True, True, False)
-            HERO_POSITION[0] -= STEP                   
+            HERO_POSITION[0] -= STEP
         
         drawGame()
         
