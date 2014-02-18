@@ -103,8 +103,6 @@ def screenBoundsCheck(minus = False, axisX = False, axisY = False):
             BACKGROUND_POSY += STEP
 
 def heroCollisionCheck(x, y):
-    #print(str(x) + "," + str(y))
-    #print(MATRIX[x,y])
     return MATRIX[x,y]
 
 def animateHeroMovement(x0, y0, x, y):
@@ -197,9 +195,9 @@ def moveHero( position ):
     currentX = - BACKGROUND_POSX + WINDOW_RESOLUTION[0]/2
     currentY = - BACKGROUND_POSY + WINDOW_RESOLUTION[1]/2
 
-    currentChamber = heroCollisionCheck(targetX, targetY)
-    targetChamber = heroCollisionCheck(currentX, currentY)
-    
+    targetChamber = heroCollisionCheck(targetX, targetY)
+    currentChamber = heroCollisionCheck(currentX, currentY)
+
     if targetChamber != 0:
         if ( targetChamber == currentChamber ):
             print( "pozycja1:" + str(currentX) + "," +str(currentY))
@@ -208,7 +206,7 @@ def moveHero( position ):
             animateHeroMovement(currentX, currentY, targetX, targetY)
         else:
 
-            path = find_path(int(targetChamber),int(currentChamber),DATA)
+            path = find_path(int(currentChamber),int(targetChamber),DATA)
             print(path)
             for i in range(len(path[0])):
                 for j in range (2):
