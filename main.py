@@ -2,7 +2,7 @@ import sys
 import pygame
 import time
 import numpy
-import NewEngineFile
+
 from pygame.locals import *
 
 from create_box import create_box
@@ -228,6 +228,7 @@ GAME_OBJECTS = [npc2]
 npc1 = gameObject('Potworek2', (655,415))
 npc2 = gameObject('Stworek2', (360, 400))
 npc3 = gameObject('Horrorek3', (488, 544))
+
 #GAME_OBJECTS = {npc1.getPosition():npc1}
 GAME_OBJECTS = [npc1, npc2, npc3]
 print GAME_OBJECTS
