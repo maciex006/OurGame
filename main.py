@@ -48,7 +48,7 @@ DATA = ( line1, line2, line3 )
 BACKGROUND_SOURCE = 'images/background.png'
 BACKGROUND_IMG = pygame.image.load(BACKGROUND_SOURCE)
 BACKGROUND_POSX = -100
-BACKGROUND_POSY = -100
+BACKGROUND_POSY = -120
 MAP_WID = 1024
 MAP_HEI = 768
 STEP = 1
@@ -104,6 +104,9 @@ def screenBoundsCheck(minus = False, axisX = False, axisY = False):
 
 def heroCollisionCheck(x, y):
     return MATRIX[x,y]
+
+def pathLiner():
+    pass
 
 def animateHeroMovement(x0, y0, x, y):
     global BACKGROUND_POSX
