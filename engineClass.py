@@ -13,6 +13,7 @@ class gameObject():
 		self.bufTargetX = -1
 		self.bufTargetY = -1
  		self.doorFlag = 0
+		self.roomFlag = 0
 		self.step = step  # krok / predkosc z jakas sie przemieszcza, domyslnie ustawiona na 1
 
 	def __str__(self):
@@ -123,30 +124,32 @@ class gameObject():
 				print(currentChamber)
 				path = find_path(int(currentChamber),int(targetChamber),data)
 				print(path)
-				for i in range(len(path[0])):
-					if ( numpy.fabs(currentX - int(path[0][i][0][0])) < 1 ) and ( numpy.fabs(currentY - int(path[0][i][0][1])) < 1 ):
-						self.doorFlag = 1
-					if ( numpy.fabs(currentX - int(path[0][i][1][0])) < 1 ) and ( numpy.fabs(currentY - int(path[0][i][1][1])) < 1 ):
-						self.doorFlag = 0
+				#for i in range( len(path[0])):
+				if ( numpy.fabs(currentX - int(path[0][self.roomFlag][0][0])) < 1 ) and ( numpy.fabs(currentY - int(path[0][self.roomFlag][0][1])) < 1 ):
+					self.doorFlag = 1
+				if ( numpy.fabs(currentX - int(path[0][self.roomFlag][1][0])) < 1 ) and ( numpy.fabs(currentY - int(path[0][self.roomFlag][1][1])) < 1 ):
+					self.doorFlag = 0
+					self.roomFlag = self.roomFlag+1
 
-					self.bufTargetX = int(path[0][i][self.doorFlag][0])
-					self.bufTargetY = int(path[0][i][self.doorFlag][1])
+				self.bufTargetX = int(path[0][self.roomFlag][self.doorFlag][0])
+				self.bufTargetY = int(path[0][self.roomFlag][self.doorFlag][1])
 
-					print( "pozycja2:" + str(currentX) + "," +str(currentY))
-					print( "cel2:" + str(targetX) + "," +str(targetY))
+				print( "pozycja2:" + str(currentX) + "," +str(currentY))
+				print( "cel2:" + str(self.bufTargetX) + "," +str(self.bufTargetY))
 
-					animateHeroMovement(currentX, currentY, self.bufTargetX , self.bufTargetY)
+				animateHeroMovement(currentX, currentY, self.bufTargetX , self.bufTargetY)
 
 				targetX = self.bufTargetX
 				targetY = self.bufTargetY
 				print( "pozycja3:" + str(currentX) + "," +str(currentY))
-				print( "cel3:" + str(targetX) + "," +str(targetY))
+				print( "cel3:" + str(self.bufTargetX) + "," +str(self.bufTargetY))
 				animateHeroMovement(currentX, currentY , targetX , targetY)
 
 
 		if ( numpy.fabs(self.targetX-self.positionX) < 1 and numpy.fabs(self.targetY-self.positionY) < 1 ):
 			self.positionX = self.targetX
 			self.positionY = self.targetY
+			self.roomFlag = 0
 
 		return self.getPosition()
 
