@@ -227,7 +227,7 @@ GAME_OBJECTS = [npc2]
 
 npc1 = gameObject('Potworek2', (655,415))
 npc2 = gameObject('Stworek2', (360, 400))
-npc3 = gameObject('Horrorek3', (488, 544))
+npc3 = gameObject('Horrorek3', (484, 541))
 
 #GAME_OBJECTS = {npc1.getPosition():npc1}
 GAME_OBJECTS = [npc1, npc2, npc3]
