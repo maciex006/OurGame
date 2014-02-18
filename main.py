@@ -30,7 +30,7 @@ PURPLE = (255, 0, 255)
 DIM_X =  1024
 DIM_Y =  728
 
-MATRIX = load_box( DIM_X , DIM_Y , "map_input.txt" )
+MATRIX = []
 
 #a = (579,407)
 #b = (595,480)
@@ -75,11 +75,13 @@ def detectDoubleClick():
     return False
 
 def loadGame():
+    global MATRIX
     notReady = True
     setDisplay.fill(BLACK)
     pygame.draw.rect(setDisplay, RED, (int(WINDOW_RESOLUTION[0]/8), int(WINDOW_RESOLUTION[1]/4)*3, int(WINDOW_RESOLUTION[0]/8)*6, int(WINDOW_RESOLUTION[1]/8)), 2)
     pygame.display.update()
-    pygame.time.wait(500)
+    #pygame.time.wait(500)
+    MATRIX = load_box( DIM_X , DIM_Y , "map_input.txt" )
 
     for i in range(1, 7):
         pygame.draw.rect(setDisplay, WHITE, (int(WINDOW_RESOLUTION[0]/8), int(WINDOW_RESOLUTION[1]/4)*3, int(WINDOW_RESOLUTION[0]/8)*i, int(WINDOW_RESOLUTION[1]/8)))
@@ -285,5 +287,6 @@ def runGame():
 while True:
     global FPS_TIME
     FPS_TIME = pygame.time.Clock()
+    loadGame()
     runGame()
     
