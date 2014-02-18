@@ -32,10 +32,15 @@ DIM_Y =  728
 
 MATRIX = load_box( DIM_X , DIM_Y , "map_input.txt" )
 
-
-line1 = (1, ((579,407),2))
-line2 = (2, ((579,407),1),((595,480),3))
-line3 = (3, ((595,480),2))
+#a = (579,407)
+#b = (595,480)
+outa = (566,398),(586,418)
+ina = (586,418),(566,398)
+outb = (586,486),(611,468)
+inb = (611,468),(586,486)
+line1 = (1, (outa,2))
+line2 = (2, (ina,1),(inb,3))
+line3 = (3, (outb,2))
 DATA = ( line1, line2, line3 )
 
 #####################
@@ -48,7 +53,7 @@ MAP_WID = 1024
 MAP_HEI = 768
 STEP = 1
 
-WINDOW_RESOLUTION = (400, 300)
+WINDOW_RESOLUTION = (550, 450)
 WINDOW_CENTER = [int(WINDOW_RESOLUTION[0]/2), int(WINDOW_RESOLUTION[1]/2)]
 HERO_POSITION = [BACKGROUND_POSX + int(WINDOW_RESOLUTION[0]/2), BACKGROUND_POSY + int(WINDOW_RESOLUTION[1]/2)]
 WINDOW_NAME = "OurGame"
@@ -204,16 +209,16 @@ def moveHero( position ):
             path = find_path(int(targetChamber),int(currentChamber),DATA)
             print(path)
             for i in range(len(path[0])):
-                targetX = int(path[0][i][0])
-                targetY = int(path[0][i][1])
-                print( "pozycja2:" + str(currentX) + "," +str(currentY))
-                print( "cel2:" + str(targetX) + "," +str(targetY))
-                #print(str(currentX) + " oraz " + str(currentY))
-                #print(str(targetX) + " oraz " + str(targetY))
-                animateHeroMovement(currentX, currentY, targetX , targetY)
-                currentX = - BACKGROUND_POSX + WINDOW_RESOLUTION[0]/2
-                currentY = - BACKGROUND_POSY + WINDOW_RESOLUTION[1]/2
-                #print(str(currentX) + " oraz " + str(currentY))
+                for j in range (2):
+                    targetX = int(path[0][i][j][0])
+                    targetY = int(path[0][i][j][1])
+
+                    print( "pozycja2:" + str(currentX) + "," +str(currentY))
+                    print( "cel2:" + str(targetX) + "," +str(targetY))
+
+                    animateHeroMovement(currentX, currentY, targetX , targetY)
+                    currentX = - BACKGROUND_POSX + WINDOW_RESOLUTION[0]/2
+                    currentY = - BACKGROUND_POSY + WINDOW_RESOLUTION[1]/2
 
 
             targetX = position[0]
