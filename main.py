@@ -61,8 +61,8 @@ WINDOW_NAME = "OurGame"
 FPS = 60
 
 HERO_SPEED = 25
-HERO_WALK = 25
-HERO_RUN = 10
+HERO_WALK = 1
+HERO_RUN = 2
 
 setDisplay = pygame.display.set_mode(WINDOW_RESOLUTION)
 pygame.display.set_caption(WINDOW_NAME)
@@ -228,6 +228,7 @@ GAME_OBJECTS = [npc2]
 npc1 = gameObject('Potworek2', (655,415))
 npc2 = gameObject('Stworek2', (360, 400))
 npc3 = gameObject('Horrorek3', (484, 541))
+hero = gameObject('Hero', (WINDOW_CENTER[0]-BACKGROUND_POSX, WINDOW_CENTER[1]-BACKGROUND_POSY))
 
 #GAME_OBJECTS = {npc1.getPosition():npc1}
 GAME_OBJECTS = [npc1, npc2, npc3]
@@ -240,17 +241,27 @@ def sigKill():
     sys.exit()
 
 def drawGame():
+        global BACKGROUND_POSX
+        global BACKGROUND_POSY
+
         #our weird background
         setDisplay.blit(BACKGROUND_IMG,(BACKGROUND_POSX, BACKGROUND_POSY))
         #gameObjects and our hero
         for npc in GAME_OBJECTS:
-            npc.move(MATRIX,DATA)
+            #npc.move(MATRIX,DATA)
             npcPos = npc.getPosition()
             npcX = int(npcPos[0] + BACKGROUND_POSX)
             npcY = int(npcPos[1] + BACKGROUND_POSY)
             pygame.draw.circle(setDisplay, GREEN, (npcX, npcY), 5)
 
-        pygame.draw.circle(setDisplay, RED, WINDOW_CENTER, 10)
+        hero.move(MATRIX, DATA)
+        heroPos = hero.getPosition()
+        heroX = int(heroPos[0] + BACKGROUND_POSX)
+        heroY = int(heroPos[1] + BACKGROUND_POSY)
+        BACKGROUND_POSX = - heroPos[0] + WINDOW_CENTER[0]
+        BACKGROUND_POSY = - heroPos[1] + WINDOW_CENTER[1]
+        pygame.draw.circle(setDisplay, RED, (heroX, heroY), 10)
+
         pygame.display.update()
         FPS_TIME.tick(FPS)
 
@@ -268,15 +279,18 @@ def runGame():
             elif event.type == MOUSEBUTTONDOWN:
                 #checking for double click
                 if detectDoubleClick():
-                    HERO_SPEED = HERO_RUN
+                    #HERO_SPEED = HERO_RUN
+                    hero.setStep(HERO_RUN)
                 else:
-                    HERO_SPEED = HERO_WALK
+                    #HERO_SPEED = HERO_WALK
+                    hero.setStep(HERO_WALK)
 
 
                 mousePosition = pygame.mouse.get_pos() # (x, y)
                 #print mousePosition
 
-                moveHero(translate(mousePosition[0], mousePosition[1]))
+                hero.setTarget(translate(mousePosition[0], mousePosition[1])[0],translate(mousePosition[0], mousePosition[1])[1])
+
 
         keys = pygame.key.get_pressed()
         if keys[K_UP] or keys[K_w]:

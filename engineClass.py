@@ -13,7 +13,7 @@ class gameObject():
 		self.bufTargetX = -1
 		self.bufTargetY = -1
  		self.doorFlag = 0
-		self.roomFlag = 0
+		self.path =[]
 		self.step = step  # krok / predkosc z jakas sie przemieszcza, domyslnie ustawiona na 1
 
 	def __str__(self):
@@ -37,6 +37,9 @@ class gameObject():
 		self.targetX = tarX
 		self.targetY = tarY
 
+	def getTarget(self):
+		return (self.targetX , self.targetY)
+
 	def setStep(self, step):
 		self.step = step
 
@@ -59,7 +62,7 @@ class gameObject():
 
 		return self.getPosition()
 
-	def move(self, matrix = [], data = [] , step = -1):
+	def move(self, matrix = [], data = [] , step = 1 ):
 
 		targetX = self.targetX
 		targetY = self.targetY
@@ -67,91 +70,79 @@ class gameObject():
 		currentX = self.positionX
 		currentY = self.positionY
 
-		def heroCollisionCheck(x, y):
+		def heroCollisionCheck(x, y): # funkcja sprawdzajaca, czy mozna wejsc na dane pole
 			return matrix[x,y]
 
-		def animateHeroMovement(x0, y0, x, y):
+		def animateHeroMovement(x0, y0, x, y): # funkcja ruchu
 
-			d = numpy.sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0))
+			d = numpy.sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0)) # wyznaczamy odleglosc miedzy punktami
 			if ((x-x0) != 0):
-				a = numpy.arctan(numpy.fabs(y-y0)/numpy.fabs(x-x0))
+				a = numpy.arctan(numpy.fabs(y-y0)/numpy.fabs(x-x0)) # kat nachylenia wzgledem prostej OX
 			else:
 				a = 0
 
-			new_d = -step
+			new_d = +step # ustaiwamy new_d na wartosc kroku
 
-			mouseNotClicked = True
 
-			while ( new_d < d ) and (mouseNotClicked):
-				if ( x > x0 ):
-					if ( y < y0 ):
-						newx = x - (d - new_d)*numpy.cos(a)
-						newy = y + (d - new_d)*numpy.sin(a)
-					else:
-						newx = x - (d - new_d)*numpy.cos(a)
-						newy = y - (d - new_d)*numpy.sin(a)
+			# i zwiekszamy o krok do czasu gdy nie osiagnie wartosci d (odleglosc miedzy punktami)
+            # jednoczesnie obliczajac wspolrzedne nowych punktow
+
+			if ( x > x0 ):
+				if ( y < y0 ):
+					newx = x - (d - self.step)*numpy.cos(a)
+					newy = y + (d - self.step)*numpy.sin(a)
 				else:
-					if ( y < y0 ):
-						newx = x + (d - new_d)*numpy.cos(a)
-						newy = y + (d - new_d)*numpy.sin(a)
-					else:
-						newx = x + (d - new_d)*numpy.cos(a)
-						newy = y - (d - new_d)*numpy.sin(a)
-
-				print(newx)
-				print(newy)
-
-				if heroCollisionCheck(newx, newy):
-					self.positionX = newx
-					self.positionY = newy
-					return 0
-				else:
-					return -1
-
-		targetChamber = heroCollisionCheck(targetX, targetY)
-		currentChamber = heroCollisionCheck(currentX, currentY)
-
-		if targetChamber != 0:
-			if ( targetChamber == currentChamber ):
-				self.bufTargetX = -1
-				self.bufTargetY = -1
-				print( "pozycja1:" + str(currentX) + "," +str(currentY))
-				print( "cel1:" + str(targetX) + "," +str(targetY))
-				animateHeroMovement(currentX, currentY, targetX, targetY)
-				#return self.getPosition()
-
+					newx = x - (d - self.step)*numpy.cos(a)
+					newy = y - (d - self.step)*numpy.sin(a)
 			else:
-				print(currentChamber)
-				path = find_path(int(currentChamber),int(targetChamber),data)
-				print(path)
-				#for i in range( len(path[0])):
-				if ( numpy.fabs(currentX - int(path[0][self.roomFlag][0][0])) < 1 ) and ( numpy.fabs(currentY - int(path[0][self.roomFlag][0][1])) < 1 ):
-					self.doorFlag = 1
-				if ( numpy.fabs(currentX - int(path[0][self.roomFlag][1][0])) < 1 ) and ( numpy.fabs(currentY - int(path[0][self.roomFlag][1][1])) < 1 ):
-					self.doorFlag = 0
-					self.roomFlag = self.roomFlag+1
+				if ( y < y0 ):
+					newx = x + (d - self.step)*numpy.cos(a)
+					newy = y + (d - self.step)*numpy.sin(a)
+				else:
+					newx = x + (d - self.step)*numpy.cos(a)
+					newy = y - (d - self.step)*numpy.sin(a)
 
-				self.bufTargetX = int(path[0][self.roomFlag][self.doorFlag][0])
-				self.bufTargetY = int(path[0][self.roomFlag][self.doorFlag][1])
+			if heroCollisionCheck(newx, newy): # jak nie ma kolizji to updatujemy nowa pozycje dla obiektu
+				self.positionX = newx
+				self.positionY = newy
+				return 0
+			else:
+				return -1
 
-				print( "pozycja2:" + str(currentX) + "," +str(currentY))
-				print( "cel2:" + str(self.bufTargetX) + "," +str(self.bufTargetY))
+		if ( self.positionX == self.targetX and self.positionY == self.targetY ): # jesli jestesmy na miejscu nie robimy nic i upewniamy sie, ze zmienne sa
+			self.doorFlag = 0                                                     # w stanie poczatkowym
+			self.bufTargetX = -1
+			self.bufTargetY = -1
+			self.path = []
+			return 0
+		else:
+			targetChamber = heroCollisionCheck(targetX, targetY)
+			currentChamber = heroCollisionCheck(currentX, currentY)
 
-				animateHeroMovement(currentX, currentY, self.bufTargetX , self.bufTargetY)
+			if targetChamber != 0: # wykluczenie przypadkow wychodzenia poza mape
+				if ( targetChamber == currentChamber ): # przypadek kiedy jestesmy w tym samym pomieszczeniu
+					self.bufTargetX = -1
+					self.bufTargetY = -1
+					animateHeroMovement(currentX, currentY, targetX, targetY) # wywolanie funkcji ruchu
+				else: # przypadek gdy jestesmy w innym pokoju
+					if self.doorFlag != 1: # jesli nie jestesmy w drzwiach (miedzy dwoma punktami we i wy)
+						self.path = find_path(int(currentChamber),int(targetChamber),data) # wyszukujemy sciezke do celu
+					# jesli jestesmy w punkcie we drzwi ustawiamy flage drzwi na 1
+					if ( numpy.fabs(currentX - int(self.path[0][0][0][0])) < 1 ) and ( numpy.fabs(currentY - int(self.path[0][0][0][1])) < 1 ):
+						self.doorFlag = 1
+					# jesli jestesmy w punkcie wy drzwi ustawiamy flage drzwi na 0
+					if ( numpy.fabs(currentX - int(self.path[0][0][1][0])) < 1 ) and ( numpy.fabs(currentY - int(self.path[0][0][1][1])) < 1 ):
+						self.doorFlag = 0
 
-				targetX = self.bufTargetX
-				targetY = self.bufTargetY
-				print( "pozycja3:" + str(currentX) + "," +str(currentY))
-				print( "cel3:" + str(self.bufTargetX) + "," +str(self.bufTargetY))
-				animateHeroMovement(currentX, currentY , targetX , targetY)
+					self.bufTargetX = int(self.path[0][0][self.doorFlag][0]) # ustawiamy buforowe cele na wspolrzedne drzwi
+					self.bufTargetY = int(self.path[0][0][self.doorFlag][1])
+					animateHeroMovement(currentX, currentY, self.bufTargetX , self.bufTargetY) # i ruszamy do tego celu
 
+			if ( numpy.fabs(self.targetX-self.positionX) < self.step and numpy.fabs(self.targetY-self.positionY) < self.step ): # jesli sie znajdujemy w poblizu punktu docelowego
+				self.positionX = self.targetX # ustaiwamy wspolrzedne na ten punkt
+				self.positionY = self.targetY
 
-		if ( numpy.fabs(self.targetX-self.positionX) < 1 and numpy.fabs(self.targetY-self.positionY) < 1 ):
-			self.positionX = self.targetX
-			self.positionY = self.targetY
-			self.roomFlag = 0
-
-		return self.getPosition()
+			return self.getPosition()
 
 
 
