@@ -220,15 +220,15 @@ def moveHero( position ):
             print( "cel3:" + str(targetX) + "," +str(targetY))
             animateHeroMovement(currentX, currentY , targetX , targetY)
 
-from engineClass import gameObject
-npc2 = gameObject('Stworek2', (655,415)) # 655,415
+from engineClass import dynamicObject
+npc2 = dynamicObject('Stworek2', (655,415)) # 655,415
 #GAME_OBJECTS = {npc1.getPosition():npc1}
 GAME_OBJECTS = [npc2]
 
-npc1 = gameObject('Potworek2', (655,415))
-npc2 = gameObject('Stworek2', (360, 400))
-npc3 = gameObject('Horrorek3', (484, 541))
-hero = gameObject('Hero', (WINDOW_CENTER[0]-BACKGROUND_POSX, WINDOW_CENTER[1]-BACKGROUND_POSY))
+npc1 = dynamicObject('Potworek2', (655,415))
+npc2 = dynamicObject('Stworek2', (360, 400))
+npc3 = dynamicObject('Horrorek3', (484, 541))
+hero = dynamicObject('Hero', (WINDOW_CENTER[0]-BACKGROUND_POSX, WINDOW_CENTER[1]-BACKGROUND_POSY))
 
 #GAME_OBJECTS = {npc1.getPosition():npc1}
 GAME_OBJECTS = [npc1, npc2, npc3]

@@ -3,6 +3,26 @@ import numpy
 import pygame
 
 class gameObject():
+    def __init__(self, name, (x,y)):
+        self.positionX = x  # aktualna pozycja obiektu
+        self.positionY = y
+        self.name = name  # nazwa obiektu
+
+    def __str__(self):
+        return self.name
+
+    def getName(self):
+        return self.name
+
+    def getPosition(self):
+        return (self.positionX, self.positionY)
+
+    # ustawienie aktualnej pozycji obiektu
+    def setPosition(self, (x, y)):
+        self.positionX = int(x)
+        self.positionY = int(y)
+
+class dynamicObject(gameObject):
 
 	def __init__(self, name, (x, y), step = 1):
 		self.positionX = x  # aktualna pozycja obiektu
@@ -15,20 +35,6 @@ class gameObject():
  		self.doorFlag = 0
 		self.path =[]
 		self.step = step  # krok / predkosc z jakas sie przemieszcza, domyslnie ustawiona na 1
-
-	def __str__(self):
-		return self.name
-
-	def getName(self):
-		return self.name
-
-	def getPosition(self):
-		return (self.positionX, self.positionY)
-
-	# ustawienie aktualnej pozycji obiektu
-	def setPosition(self, (x, y)):
-		self.positionX = int(x)
-		self.positionY = int(y)
 
 	# ustawiamy cel naszego obiektu
 	# jesli cel != aktualna pozycja - metoda move
@@ -45,22 +51,6 @@ class gameObject():
 
 	# jesli podamy parametr predkosci, to zostanie on zapamietany i wykorzystany
 	# w ruchu, wpw move bedzie korzystac z zapamietanego kroku 'step'
-	def move1(self, step = -1):
-		if step != -1:
-			self.setStep(step)
-		#print "cel to: (", x, ",", y, ")"
-		if self.positionX != self.targetX:
-			if self.positionX < self.targetX:
-				self.positionX += self.step
-			else:
-				self.positionX -= self.step
-		if self.positionY != self.targetY:
-			if self.positionY < self.targetY:
-				self.positionY += self.step
-			else:
-				self.positionY -= self.step
-
-		return self.getPosition()
 
 	def move(self, matrix = [], data = [] , step = 1 ):
 
@@ -80,9 +70,6 @@ class gameObject():
 				a = numpy.arctan(numpy.fabs(y-y0)/numpy.fabs(x-x0)) # kat nachylenia wzgledem prostej OX
 			else:
 				a = 0
-
-			new_d = +step # ustaiwamy new_d na wartosc kroku
-
 
 			# i zwiekszamy o krok do czasu gdy nie osiagnie wartosci d (odleglosc miedzy punktami)
             # jednoczesnie obliczajac wspolrzedne nowych punktow
