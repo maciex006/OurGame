@@ -151,7 +151,6 @@ def find_path( currentPosition1, targetPosition1, data ):
                 first_iteration = 0
             else:
                 new_path = new_path + [[0]]
-            print(new_path)
             for j in range(0, len(path[m])-1):
                 for i in range(1,len(data[path[m][j]-1])):
                     if data[path[m][j]-1][i][1] == path[m][j+1] :
@@ -163,6 +162,4 @@ def find_path( currentPosition1, targetPosition1, data ):
 
 
     return translate( main_func( currentPosition1 , targetPosition1 ) )
-
-print(find_path(1,3,data))
 
