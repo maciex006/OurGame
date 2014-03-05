@@ -112,122 +112,11 @@ def screenBoundsCheck(minus = False, axisX = False, axisY = False):
         if (BACKGROUND_POSY + STEP <= 0) and axisY:
             BACKGROUND_POSY += STEP
 
-def heroCollisionCheck(x, y):
-    return MATRIX[x,y]
-
-def animateHeroMovement(x0, y0, x, y):
-    global BACKGROUND_POSX
-    global BACKGROUND_POSY
-    global HERO_SPEED
-
-    d = numpy.sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0))
-    if ((x-x0) != 0):
-        a = numpy.arctan(numpy.fabs(y-y0)/numpy.fabs(x-x0))
-    else:
-        a = 0
-
-    new_d = STEP
-    
-    mouseNotClicked = True
-
-    while ( new_d < d ) and (mouseNotClicked):
-        if ( x > x0 ):
-            if ( y < y0 ):
-                newx = x - (d - new_d)*numpy.cos(a)
-                newy = y + (d - new_d)*numpy.sin(a)
-            else:
-                newx = x - (d - new_d)*numpy.cos(a)
-                newy = y - (d - new_d)*numpy.sin(a)
-        else:
-            if ( y < y0 ):
-                newx = x + (d - new_d)*numpy.cos(a)
-                newy = y + (d - new_d)*numpy.sin(a)
-            else:
-                newx = x + (d - new_d)*numpy.cos(a)
-                newy = y - (d - new_d)*numpy.sin(a)
-
-
-        if heroCollisionCheck(newx, newy):
-            BACKGROUND_POSX = WINDOW_RESOLUTION[0]/2 - newx
-            BACKGROUND_POSY = WINDOW_RESOLUTION[1]/2 - newy
-            pygame.time.wait(HERO_SPEED)
-            new_d += STEP
-            drawGame()
-        else:
-            return -1
-
-
-        #click check
-        for event in pygame.event.get():
-            if event.type == MOUSEBUTTONDOWN:
-                #checking for double click
-                mouseNotClicked = False
-                mousePosition = pygame.mouse.get_pos()
-                
-                if detectDoubleClick():
-                    HERO_SPEED = HERO_RUN
-                else:
-                    HERO_SPEED = HERO_WALK
-                
-                return moveHero(translate(mousePosition[0], mousePosition[1]))
-                    
-
-    if mouseNotClicked:
-        new_d = d
-        BACKGROUND_POSX = WINDOW_RESOLUTION[0]/2 - x
-        BACKGROUND_POSY = WINDOW_RESOLUTION[1]/2 - y
-
-
 def translate(x , y):
     global BACKGROUND_POSX
     global BACKGROUND_POSY
     return (int(x - BACKGROUND_POSX),int(y - BACKGROUND_POSY))
 
-def moveHero( position ):
-    print("Nowy klik!")
-    targetX = position[0]
-    targetY = position[1]
-
-    global BACKGROUND_POSX
-    global BACKGROUND_POSY
-
-    #currentX = BACKGROUND_POSX
-    #currentY = BACKGROUND_POSY
-
-    currentX = - BACKGROUND_POSX + WINDOW_RESOLUTION[0]/2
-    currentY = - BACKGROUND_POSY + WINDOW_RESOLUTION[1]/2
-
-    targetChamber = heroCollisionCheck(targetX, targetY)
-    currentChamber = heroCollisionCheck(currentX, currentY)
-
-    if targetChamber != 0:
-        if ( targetChamber == currentChamber ):
-            print( "pozycja1:" + str(currentX) + "," +str(currentY))
-            print( "cel1:" + str(targetX) + "," +str(targetY))
-
-            animateHeroMovement(currentX, currentY, targetX, targetY)
-        else:
-
-            path = find_path(int(currentChamber),int(targetChamber),DATA)
-            print(path)
-            for i in range(len(path[0])):
-                for j in range (2):
-                    targetX = int(path[0][i][j][0])
-                    targetY = int(path[0][i][j][1])
-
-                    print( "pozycja2:" + str(currentX) + "," +str(currentY))
-                    print( "cel2:" + str(targetX) + "," +str(targetY))
-
-                    animateHeroMovement(currentX, currentY, targetX , targetY)
-                    currentX = - BACKGROUND_POSX + WINDOW_RESOLUTION[0]/2
-                    currentY = - BACKGROUND_POSY + WINDOW_RESOLUTION[1]/2
-
-
-            targetX = position[0]
-            targetY = position[1]
-            print( "pozycja3:" + str(currentX) + "," +str(currentY))
-            print( "cel3:" + str(targetX) + "," +str(targetY))
-            animateHeroMovement(currentX, currentY , targetX , targetY)
 
 from engineClass import dynamicObject
 from engineClass import staticObject
@@ -242,9 +131,11 @@ hero = dynamicObject('Hero', (WINDOW_CENTER[0]-BACKGROUND_POSX, WINDOW_CENTER[1]
 STATIC_OBJECTS = [0]
 STATIC_OBJECTS = STATIC_OBJECTS + [ staticObject('Stol', (TABLE_POSX, TABLE_POSY) , -1, TABLE_IMG) ]
 
+STANDING_POINTS = [0]
+STANDING_POINTS = STANDING_POINTS + [ (316,325) ]
+
 #GAME_OBJECTS = {npc1.getPosition():npc1}
 GAME_OBJECTS = [npc1, npc2, npc3]
-print GAME_OBJECTS
 for e in GAME_OBJECTS:
     e.setTarget(390, 340)
 
@@ -255,9 +146,6 @@ def sigKill():
 def drawGame():
         global BACKGROUND_POSX
         global BACKGROUND_POSY
-
-
-
 
         #hero moving
         correction = -1
@@ -273,10 +161,13 @@ def drawGame():
         setDisplay.blit(BACKGROUND_IMG,(BACKGROUND_POSX, BACKGROUND_POSY))
 
         mousePosition = pygame.mouse.get_pos()
-
+        matrixPosition = MATRIX[ mousePosition[0] - BACKGROUND_POSX][mousePosition[1] - BACKGROUND_POSY ]
         for i in range(1,len(STATIC_OBJECTS)):
-            if ( MATRIX[ mousePosition[0] - BACKGROUND_POSX][mousePosition[1] - BACKGROUND_POSY ] == -i ):
+            if ( matrixPosition == -i ):
                 setDisplay.blit(STATIC_OBJECTS[i].getGraphic(), (BACKGROUND_POSX+STATIC_OBJECTS[i].getPosition()[0]+correction, BACKGROUND_POSY+STATIC_OBJECTS[i].getPosition()[1]+correction))
+            if ( heroPos == STANDING_POINTS[i]):
+                print("DOSZEDL!")
+                #TUUUUUUTAJ WYSWIETLENIE OKIENKA
 
         pygame.draw.circle(setDisplay, RED, (heroX, heroY), 10)
 
@@ -314,8 +205,14 @@ def runGame():
 
 
                 mousePosition = pygame.mouse.get_pos() # (x, y)
-
                 hero.setTarget(translate(mousePosition[0], mousePosition[1])[0],translate(mousePosition[0], mousePosition[1])[1])
+
+                matrixPosition = MATRIX[ mousePosition[0] - BACKGROUND_POSX][mousePosition[1] - BACKGROUND_POSY ]
+                for i in range(1,len(STATIC_OBJECTS)): # przeszukiwanie tablicy obiektow statycznych
+                    if ( matrixPosition == -i ):
+                        hero.setTarget(STANDING_POINTS[i][0],STANDING_POINTS[i][1])
+
+
 
 
         keys = pygame.key.get_pressed()
