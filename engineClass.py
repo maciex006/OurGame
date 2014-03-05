@@ -132,7 +132,7 @@ class dynamicObject(staticObject):
                     # jesli jestesmy w punkcie we drzwi ustawiamy flage drzwi na 1
                     if ( numpy.fabs(currentX - int(self.path[0][0][0][0])) < 1 ) and ( numpy.fabs(currentY - int(self.path[0][0][0][1])) < 1 ):
                         self.doorFlag = 1
-                    # jesli jestesmy w punkcie wy drzwi ustawiamy flage drzwi na 0
+                    # jesli jestesmy w punkcie wy drzwi ustawiamy flage drzwi na 0 a
                     if ( numpy.fabs(currentX - int(self.path[0][0][1][0])) < 1 ) and ( numpy.fabs(currentY - int(self.path[0][0][1][1])) < 1 ):
                         self.doorFlag = 0
 

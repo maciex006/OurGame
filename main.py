@@ -239,7 +239,8 @@ npc1 = dynamicObject('Potworek2', (655,415))
 npc2 = dynamicObject('Stworek2', (360, 400))
 npc3 = dynamicObject('Horrorek3', (484, 541))
 hero = dynamicObject('Hero', (WINDOW_CENTER[0]-BACKGROUND_POSX, WINDOW_CENTER[1]-BACKGROUND_POSY))
-table = staticObject('Stol', (TABLE_POSX, TABLE_POSY) , -1, TABLE_IMG)
+STATIC_OBJECTS = [0]
+STATIC_OBJECTS = STATIC_OBJECTS + [ staticObject('Stol', (TABLE_POSX, TABLE_POSY) , -1, TABLE_IMG) ]
 
 #GAME_OBJECTS = {npc1.getPosition():npc1}
 GAME_OBJECTS = [npc1, npc2, npc3]
@@ -268,13 +269,14 @@ def drawGame():
         BACKGROUND_POSX = - heroPos[0] + WINDOW_CENTER[0]
         BACKGROUND_POSY = - heroPos[1] + WINDOW_CENTER[1]
 
-        #our weird background
+        #our weird background a
         setDisplay.blit(BACKGROUND_IMG,(BACKGROUND_POSX, BACKGROUND_POSY))
 
         mousePosition = pygame.mouse.get_pos()
 
-        if ( MATRIX[ mousePosition[0] - BACKGROUND_POSX][mousePosition[1] - BACKGROUND_POSY ] == -1 ):
-            setDisplay.blit(table.getGraphic(), (BACKGROUND_POSX+table.getPosition()[0]+correction, BACKGROUND_POSY+table.getPosition()[1]+correction))
+        for i in range(1,len(STATIC_OBJECTS)):
+            if ( MATRIX[ mousePosition[0] - BACKGROUND_POSX][mousePosition[1] - BACKGROUND_POSY ] == -i ):
+                setDisplay.blit(STATIC_OBJECTS[i].getGraphic(), (BACKGROUND_POSX+STATIC_OBJECTS[i].getPosition()[0]+correction, BACKGROUND_POSY+STATIC_OBJECTS[i].getPosition()[1]+correction))
 
         pygame.draw.circle(setDisplay, RED, (heroX, heroY), 10)
 
