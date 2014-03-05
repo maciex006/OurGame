@@ -239,7 +239,7 @@ npc1 = dynamicObject('Potworek2', (655,415))
 npc2 = dynamicObject('Stworek2', (360, 400))
 npc3 = dynamicObject('Horrorek3', (484, 541))
 hero = dynamicObject('Hero', (WINDOW_CENTER[0]-BACKGROUND_POSX, WINDOW_CENTER[1]-BACKGROUND_POSY))
-table = staticObject('Stol', (TABLE_POSX, TABLE_POSY) , TABLE_IMG)
+table = staticObject('Stol', (TABLE_POSX, TABLE_POSY) , -1, TABLE_IMG)
 
 #GAME_OBJECTS = {npc1.getPosition():npc1}
 GAME_OBJECTS = [npc1, npc2, npc3]
@@ -254,32 +254,39 @@ def sigKill():
 def drawGame():
         global BACKGROUND_POSX
         global BACKGROUND_POSY
-        #our weird background
+
+
 
 
         #hero moving
-        correction = 0
+        correction = -1
         if (hero.move(MATRIX, DATA)):
-            correction = 1
+            correction = 0
         heroPos = hero.getPosition()
         heroX = int(heroPos[0] + BACKGROUND_POSX)
         heroY = int(heroPos[1] + BACKGROUND_POSY)
         BACKGROUND_POSX = - heroPos[0] + WINDOW_CENTER[0]
         BACKGROUND_POSY = - heroPos[1] + WINDOW_CENTER[1]
 
-
+        #our weird background
         setDisplay.blit(BACKGROUND_IMG,(BACKGROUND_POSX, BACKGROUND_POSY))
+
+        mousePosition = pygame.mouse.get_pos()
+
+        if ( MATRIX[ mousePosition[0] - BACKGROUND_POSX][mousePosition[1] - BACKGROUND_POSY ] == -1 ):
+            setDisplay.blit(table.getGraphic(), (BACKGROUND_POSX+table.getPosition()[0]+correction, BACKGROUND_POSY+table.getPosition()[1]+correction))
+
+        pygame.draw.circle(setDisplay, RED, (heroX, heroY), 10)
+
         #gameObjects
         for npc in GAME_OBJECTS:
             npc.move(MATRIX,DATA)
-
             npcPos = npc.getPosition()
             npcX = int(npcPos[0] + BACKGROUND_POSX + correction)
             npcY = int(npcPos[1] + BACKGROUND_POSY + correction)
             pygame.draw.circle(setDisplay, GREEN, (npcX, npcY), 5)
 
-        setDisplay.blit(table.getGraphic(), (BACKGROUND_POSX+table.getPosition()[0]+correction, BACKGROUND_POSY+table.getPosition()[1]+correction))
-        pygame.draw.circle(setDisplay, RED, (heroX, heroY), 10)
+
         pygame.display.update()
         FPS_TIME.tick(FPS)
 
@@ -305,7 +312,6 @@ def runGame():
 
 
                 mousePosition = pygame.mouse.get_pos() # (x, y)
-                #print mousePosition
 
                 hero.setTarget(translate(mousePosition[0], mousePosition[1])[0],translate(mousePosition[0], mousePosition[1])[1])
 

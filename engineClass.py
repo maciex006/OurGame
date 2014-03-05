@@ -3,11 +3,13 @@ import numpy
 import pygame
 
 class staticObject():
-    def __init__(self, name, (x,y), graphic = ""):
+    def __init__(self, name, (x,y), id, graphic = ""):
         self.positionX = x  # aktualna pozycja obiektu
         self.positionY = y
         self.name = name  # nazwa obiektu
         self.sourceGraphic = graphic
+        self.id = id
+        self.visible = 0
 
     def __str__(self):
         return self.name
@@ -99,7 +101,7 @@ class dynamicObject(staticObject):
                     newx = x + (d - self.step)*numpy.cos(a)
                     newy = y - (d - self.step)*numpy.sin(a)
 
-            if heroCollisionCheck(newx, newy): # jak nie ma kolizji to updatujemy nowa pozycje dla obiektu
+            if ( heroCollisionCheck(newx, newy) > 0 ): # jak nie ma kolizji to updatujemy nowa pozycje dla obiektu
                 self.positionX = newx
                 self.positionY = newy
                 return 0
@@ -119,7 +121,7 @@ class dynamicObject(staticObject):
             targetChamber = heroCollisionCheck(targetX, targetY)
             currentChamber = heroCollisionCheck(currentX, currentY)
 
-            if targetChamber != 0: # wykluczenie przypadkow wychodzenia poza mape
+            if targetChamber > 0: # wykluczenie przypadkow wychodzenia poza mape
                 if ( targetChamber == currentChamber ): # przypadek kiedy jestesmy w tym samym pomieszczeniu
                     self.bufTargetX = -1
                     self.bufTargetY = -1
