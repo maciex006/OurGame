@@ -143,6 +143,8 @@ def sigKill():
     pygame.quit()
     sys.exit()
 
+here = 0
+
 def drawGame():
         global BACKGROUND_POSX
         global BACKGROUND_POSY
@@ -160,13 +162,17 @@ def drawGame():
         #our weird background a
         setDisplay.blit(BACKGROUND_IMG,(BACKGROUND_POSX, BACKGROUND_POSY))
 
+
+
         mousePosition = pygame.mouse.get_pos()
         matrixPosition = MATRIX[ mousePosition[0] - BACKGROUND_POSX][mousePosition[1] - BACKGROUND_POSY ]
         for i in range(1,len(STATIC_OBJECTS)):
             if ( matrixPosition == -i ):
                 setDisplay.blit(STATIC_OBJECTS[i].getGraphic(), (BACKGROUND_POSX+STATIC_OBJECTS[i].getPosition()[0]+correction, BACKGROUND_POSY+STATIC_OBJECTS[i].getPosition()[1]+correction))
-            if ( heroPos == STANDING_POINTS[i]):
+            if ( heroPos == STANDING_POINTS[i] and here == 0):
                 print("DOSZEDL!")
+                global here
+                here = 1
                 #TUUUUUUTAJ WYSWIETLENIE OKIENKA
 
         pygame.draw.circle(setDisplay, RED, (heroX, heroY), 10)
@@ -206,7 +212,8 @@ def runGame():
 
                 mousePosition = pygame.mouse.get_pos() # (x, y)
                 hero.setTarget(translate(mousePosition[0], mousePosition[1])[0],translate(mousePosition[0], mousePosition[1])[1])
-
+                global here
+                here = 0
                 matrixPosition = MATRIX[ mousePosition[0] - BACKGROUND_POSX][mousePosition[1] - BACKGROUND_POSY ]
                 for i in range(1,len(STATIC_OBJECTS)): # przeszukiwanie tablicy obiektow statycznych
                     if ( matrixPosition == -i ):
